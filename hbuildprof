@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
+
+cwd=$(pwd)
+
+dir=$(mktemp -d)
+echo "Working dir: $dir"
+cd "$dir"
+
+echo | sqlite3 timings.db <<- EOM
+CREATE TABLE events (
+  package TEXT,
+  module TEXT,
+  phase TEXT,
+  alloc INTEGER,
+  time REAL
+);
+EOM
+
+# sqlite3 "$DB" "insert into events (package, module, phase, alloc, time) \
+#   values (\"unknown\", \"$module\", \"unknown\", $alloc, $time);"
+
+find "$cwd" -name "*.dump-timings" -exec $SCRIPT_DIR/scripts/process timings.tsv failures {} \;
+
+
+commandfile=$(mktemp)
+cat <<EOF > $commandfile
+.mode tabs events
+.import /dev/stdin events
+EOF
+
+cat timings.tsv | sqlite3 --init "$commandfile" "timings.db"
