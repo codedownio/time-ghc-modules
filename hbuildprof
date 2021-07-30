@@ -24,11 +24,10 @@ EOM
 
 find "$cwd" -name "*.dump-timings" -exec $SCRIPT_DIR/scripts/process timings.tsv failures {} \;
 
+# commandfile=$(mktemp)
+# cat <<EOF > $commandfile
+# .mode tabs events
+# .import /dev/stdin events
+# EOF
 
-commandfile=$(mktemp)
-cat <<EOF > $commandfile
-.mode tabs events
-.import /dev/stdin events
-EOF
-
-cat timings.tsv | sqlite3 --init "$commandfile" "timings.db"
+# cat timings.tsv | sqlite3 --init "$commandfile" "timings.db"

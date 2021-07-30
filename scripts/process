@@ -5,10 +5,18 @@ TSV="$1"
 FAILURES="$2"
 DUMP_TIMINGS="$3"
 
-REGEX='s/\(.*\) \[\(.*\)\]:.*alloc=\([0-9]*\).*time=\([0-9\.]*\).*/todo-package\t\2\t\1\t\3\t\4/p'
-NON_MATCH_REGEX='s/\(.*\) \[\(.*\)\]:.*alloc=\([0-9]*\).*time=\([0-9\.]*\).*/asdf/!p'
+PATTERN='\(.*\) \[\(.*\)\]:.*alloc=\([0-9]*\).*time=\([0-9\.]*\).*'
+REPLACE='todo-package\t\2\t\1\t\3\t\4'
 
-sed -n "$REGEX" "$DUMP_TIMINGS" >> "$TSV"
+# sed -n "$REGEX" "$DUMP_TIMINGS" >> "$TSV"
+
+TMP_FAILURES=$(mktemp)
+
+sed -n "/$PATTERN/p; //! w $TMP_FAILURES" "$DUMP_TIMINGS" > "$TSV"
+
+cat "$TMP_FAILURES" >> "$FAILURES"
+rm "$TMP_FAILURES"
+
 # sed -n "$NON_MATCH_REGEX" "$DUMP_TIMINGS" >> "$FAILURES"
 
 # while read line; do
