@@ -8,27 +8,16 @@ DUMP_TIMINGS="$3"
 PATTERN='\(.*\) \[\(.*\)\]:.*alloc=\([0-9]*\).*time=\([0-9\.]*\).*'
 REPLACE='todo-package\t\2\t\1\t\3\t\4'
 
-# sed -n "$REGEX" "$DUMP_TIMINGS" >> "$TSV"
-
 TMP_FAILURES=$(mktemp)
+TMP_MATCHES=$(mktemp)
 
-sed -n "/$PATTERN/p; //! w $TMP_FAILURES" "$DUMP_TIMINGS" > "$TSV"
+# TODO: do the following with a single sed command to cut runtime by 50%
+# (couldn't figure out how to sub the replacement while also writing out the failures)
+
+sed -n "/$PATTERN/p; //! w $TMP_FAILURES" "$DUMP_TIMINGS" > "$TMP_MATCHES"
 
 cat "$TMP_FAILURES" >> "$FAILURES"
 rm "$TMP_FAILURES"
 
-# sed -n "$NON_MATCH_REGEX" "$DUMP_TIMINGS" >> "$FAILURES"
-
-# while read line; do
-#   # echo "Saw line: $line"
-#   module=$(echo "$line" | sed -n 's/.*\[\(.*\)\]:.*/\1/p')
-#   alloc=$(echo "$line" | sed -n 's/.*alloc=\([0-9]*\).*/\1/p')
-#   time=$(echo "$line" | sed -n 's/.*time=\([0-9\.]*\).*/\1/p')
-
-#   if [[ -n "$module" && -n "$alloc" && -n "$time" ]]; then
-#       echo "unknown\t$module\tunknown\t$alloc\t$time" >> "$TSV"
-#   else
-#       # TODO: write parse failure
-#       echo "Parse failure: $line"
-#   fi
-# done < "$DUMP_TIMINGS"
+sed -n "s/$PATTERN/$REPLACE/p" "$TMP_MATCHES" > "$TSV"
+rm $TMP_MATCHES
