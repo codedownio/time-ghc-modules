@@ -22,7 +22,15 @@ EOM
 # sqlite3 "$DB" "insert into events (package, module, phase, alloc, time) \
 #   values (\"unknown\", \"$module\", \"unknown\", $alloc, $time);"
 
-find "$cwd" -name "*.dump-timings" -exec $SCRIPT_DIR/scripts/process timings.tsv failures {} \;
+touch failures
+NUM_PROCESSED=$(find "$cwd" -name "*.dump-timings" -printf '.' -exec $SCRIPT_DIR/scripts/process timings.tsv failures {} \; | wc -c)
+NUM_FAILURES=$(cat failures | wc -l)
+NUM_EVENTS=$(cat timings.tsv | wc -l)
+
+echo "Processed $NUM_PROCESSED *.dump-timings files containing $NUM_EVENTS events"
+if (( "$NUM_FAILURES" > 0 )); then
+    echo "Failed to parse $NUM_FAILURES lines"
+fi
 
 commandfile=$(mktemp)
 cat <<EOF > $commandfile

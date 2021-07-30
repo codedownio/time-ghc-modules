@@ -19,5 +19,5 @@ sed -n "/$PATTERN/p; //! w $TMP_FAILURES" "$DUMP_TIMINGS" > "$TMP_MATCHES"
 cat "$TMP_FAILURES" >> "$FAILURES"
 rm "$TMP_FAILURES"
 
-sed -n "s/$PATTERN/$REPLACE/p" "$TMP_MATCHES" > "$TSV"
+sed -n "s/$PATTERN/$REPLACE/p" "$TMP_MATCHES" >> "$TSV"
 rm $TMP_MATCHES
