@@ -4,17 +4,31 @@ import "./styles.css";
 
 import Chart from "./Chart";
 
-
-// @ts-ignore
 import initSqlJs from "sql.js";
+//import Worker from "sql.js/dist/worker.sql-wasm";
 
 // Required to let webpack 4 know it needs to copy the wasm file to our assets
 // @ts-ignore
 import sqlWasm from "!!file-loader?name=sql-wasm-[contenthash].wasm!sql.js/dist/sql-wasm.wasm";
+// @ts-ignore
+import workerSqlWasm from "!!file-loader?name=worker-sql-wasm-[contenthash].js!sql.js/dist/worker.sql-wasm.js";
+
 
 export default function App() {
   const [db, setDb] = useState(null);
   const [error, setError] = useState(null);
+
+  const worker = React.useRef(new Worker(workerSqlWasm));
+  /* const [worker, setWorker] = useState();
+
+   * React.useEffect(() => {
+   *   ()
+   *     .then(setWorker)
+   *     .catch((e) => console.error("Error making worker", e));
+   * }, []); */
+
+  console.log("Got worker", worker);
+  console.log("Got worker code", workerSqlWasm);
 
   useEffect(() => {
     // sql.js needs to fetch its wasm file, so we cannot immediately instantiate the database
