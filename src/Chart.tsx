@@ -8,6 +8,8 @@ interface Props {
   categories: Array<string | number>;
 };
 
+const baseHeight = 200;
+
 export default class ApexChart extends React.Component<Props, any> {
   constructor(props: Props) {
     super(props);
@@ -17,8 +19,11 @@ export default class ApexChart extends React.Component<Props, any> {
 
       options: {
         chart: {
+          animations: {
+            enabled: false
+          },
           type: 'bar',
-          height: 16 * props.categories.length,
+          /*           height: baseHeight + (16 * props.categories.length), */
           stacked: true,
         },
         plotOptions: {
@@ -71,7 +76,7 @@ export default class ApexChart extends React.Component<Props, any> {
           <ReactApexCharts options={this.state.options}
                            series={this.state.series}
                            type="bar"
-                           height={16 * this.props.categories.length} />
+                           height={baseHeight + (16 * this.props.categories.length)} />
       </div>
     );
   }
