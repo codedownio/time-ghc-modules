@@ -8,8 +8,10 @@ export function formatBytes(bytes: number) {
   return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + " " + sizes[i];
 }
 
-export function formatTime(timeUs: number) {
-  if (timeUs < 999) return timeUs.toFixed(1) + "us";
-  if (timeUs < 999999) return (timeUs / 1000.).toFixed(1) + "ms";
-  return (timeUs / 1000000.).toFixed(1) + "s";
+export function formatTime(timeMs: number) {
+  if (timeMs < 0.001) return (timeMs * 1000000.).toFixed(1) + "ns";
+  if (timeMs < 1) return (timeMs * 1000.).toFixed(1) + "us";
+  if (timeMs < 1000) return timeMs.toFixed(1) + "ms";
+  if (timeMs < (1000 * 60)) return (timeMs / 1000.).toFixed(1) + "s";
+  return (timeMs / (1000. * 60.)).toFixed(1) + "m";
 }
