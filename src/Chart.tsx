@@ -7,17 +7,19 @@ interface Props {
   title: string;
   series: Array<{name: string; data: number[];}>;
   categories: Array<string | number>;
+  xLabel: string;
+  formatter: (value: number) => string;
 };
 
 const baseHeight = 200;
 
-export default function ApexChart({title, series, categories}) {
+export default function ApexChart({title, series, categories, xLabel, formatter}) {
   const options = React.useMemo(() => ({
     chart: {
       animations: {
         enabled: false
       },
-      type: 'bar',
+      type: "bar",
       /*           height: baseHeight + (16 * categories.length), */
       stacked: true,
     },
@@ -28,37 +30,32 @@ export default function ApexChart({title, series, categories}) {
     },
     stroke: {
       width: 1,
-      colors: ['#fff']
+      colors: ["#fff"]
     },
     title: {
       text: title
     },
     xaxis: {
+      title: {
+        text: xLabel
+      },
       categories: categories,
-      labels: {
-        formatter: function (val) {
-          return val + "K"
-        }
-      }
+      labels: { formatter }
     },
     yaxis: {
       title: {
-        text: "Time"
+        text: "Module"
       },
     },
     tooltip: {
-      y: {
-        formatter: function (val) {
-          return val + "K"
-        }
-      }
+      y: { formatter }
     },
     fill: {
       opacity: 1
     },
     legend: {
-      position: 'top',
-      horizontalAlign: 'left',
+      position: "top",
+      horizontalAlign: "left",
       offsetX: 40
     }
   }), [title, categories]);

@@ -40,4 +40,23 @@ echo "\"modules\": $(sqlite3 -json timings.db "select module from events group b
 echo "\"data\": $(sqlite3 -json timings.db "select module, phase, sum(time) as time, sum(alloc) as alloc from events group by module, phase;")," >> data.json
 echo "}" >> data.json
 
-node $SCRIPT_DIR/index.js $(pwd)/data.json
+# node $SCRIPT_DIR/index.js $(pwd)/data.json
+
+# cat $SCRIPT_DIR/dist/index.html | sed -e '/INSERT_DATA_HERE/r data.json' -e '/INSERT_DATA_HERE/d' > report.html
+
+# sed $'/INSERT_DATA_HERE/{e cat data.json\n}' "$SCRIPT_DIR/dist/index.html" > report.html
+
+# sed "s/\"INSERT_DATA_HERE\"/$(cat data.json)/" "$SCRIPT_DIR/dist/index.html" > report.html
+
+# sed -i -f - "$SCRIPT_DIR/dist/index.html" > report.html << EOF
+# s/BASE_64/$(cat data.json)/g
+# EOF
+
+python - <<-_EOT_
+with open('report.html', 'w') as report:
+  with open("${SCRIPT_DIR}/dist/index.html", 'r') as template:
+    with open('data.json', 'r') as dat:
+      report.write(template.read().replace('"INSERT_DATA_HERE"', dat.read()))
+_EOT_
+
+echo "--> Wrote report at file://$(pwd)/report.html"

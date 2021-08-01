@@ -6,7 +6,7 @@ import {map, reduce, size} from "lodash";
 import * as React from "react";
 
 import Chart from "./Chart";
-import {formatBytes} from "./Util";
+import {formatBytes, formatTime} from "./Util";
 
 
 interface Event {
@@ -33,6 +33,7 @@ type Aggregate = "time" | "alloc";
 
 export default function App() {
   const [aggregate, setAggregate] = React.useState<Aggregate>("time");
+  const [numModulesToShow, setNumModulesToShow] = React.useState(20);
 
   const totalTime = React.useMemo(() => reduce(data.phasesByTime, (n, value) => n + value.time, 0), [data]);
   const totalAlloc = React.useMemo(() => reduce(data.phasesByAlloc, (n, value) => n + value.alloc, 0), [data]);
@@ -78,19 +79,16 @@ export default function App() {
   console.log("Made series", series);
 
   const [finalSeries, finalModuleNames] = React.useMemo(() => {
-    const numModules = 20;
-
     const finalSeries = map(series, (x) => ({
       name: x.name,
-      data: x.data.slice(0, numModules)
+      data: x.data.slice(0, numModulesToShow)
     }));
 
-    return [finalSeries, moduleNames.slice(0, numModules)];
-  }, [series, moduleNames]);
-
-  console.log("Got aggregate", aggregate);
+    return [finalSeries, moduleNames.slice(0, numModulesToShow)];
+  }, [series, moduleNames, numModulesToShow]);
 
   const handleSetAggregate = React.useCallback((event) => setAggregate(event.target.value), [setAggregate]);
+  const handleSetNumModulesToShow = React.useCallback((event) => setNumModulesToShow(event.target.value), [setNumModulesToShow]);
 
   return (
     <div className="center w-80">
@@ -101,17 +99,28 @@ export default function App() {
                     <MenuItem value="time">Time (ms)</MenuItem>
                     <MenuItem value="alloc">Allocations (bytes)</MenuItem>
                 </Select>
+
+                <Select className="ml2"
+                        value={numModulesToShow}
+                        onChange={handleSetNumModulesToShow}>
+                    <MenuItem value={10}>Top 10 modules</MenuItem>
+                    <MenuItem value={20}>Top 20 modules</MenuItem>
+                    <MenuItem value={50}>Top 50 modules</MenuItem>
+                    <MenuItem value={100}>Top 100 modules</MenuItem>
+                </Select>
             </div>
 
             <div className="">
-                <div>Total time: {totalTime}</div>
+                <div>Total time: {formatTime(totalTime)}</div>
                 <div>Total allocations: {formatBytes(totalAlloc)}</div>
             </div>
         </div>
 
         <Chart title={"Build report by " + aggregate}
                series={finalSeries}
-               categories={finalModuleNames} />
+               categories={finalModuleNames}
+               xLabel={aggregate === "time" ? "Time" : "Allocations"}
+               formatter={aggregate === "time" ? formatTime : formatBytes} />
     </div>
   );
 }
