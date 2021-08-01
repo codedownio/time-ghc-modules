@@ -110,9 +110,16 @@ export default function App() {
                 </Select>
             </div>
 
-            <div className="">
-                <div>Total time: {formatTime(totalTime)}</div>
-                <div>Total allocations: {formatBytes(totalAlloc)}</div>
+            <div className="dib">
+                <div className="dib mr2">
+                    <div className="gray">Total time</div>
+                    <div className="gray">Total allocations</div>
+                </div>
+
+                <div className="dib near-black">
+                    <div className="code">{formatTime(totalTime)}</div>
+                    <div className="code">{formatBytes(totalAlloc)}</div>
+                </div>
             </div>
         </div>
 
