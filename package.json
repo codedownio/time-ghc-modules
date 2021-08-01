@@ -6,7 +6,7 @@
     "example": "example"
   },
   "scripts": {
-    "build": "parcel build ./src/index.html --public-url '/'",
+    "build": "rimraf ./dist && parcel build ./src/index.html --public-url '/'",
     "start": "parcel ./src/index.html"
   },
   "repository": {
@@ -22,7 +22,8 @@
   "devDependencies": {
     "@types/lodash": "^4.14.171",
     "@types/react": "^17.0.15",
-    "@types/react-dom": "^17.0.9"
+    "@types/react-dom": "^17.0.9",
+    "rimraf": "^3.0.2"
   },
   "dependencies": {
     "@material-ui/core": "^4.12.3",

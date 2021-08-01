@@ -5,9 +5,8 @@ import Select from "@material-ui/core/Select";
 import {map, reduce, size} from "lodash";
 import * as React from "react";
 
-import "tachyons";
-
 import Chart from "./Chart";
+import {formatBytes} from "./Util";
 
 
 interface Event {
@@ -106,7 +105,7 @@ export default function App() {
 
             <div className="">
                 <div>Total time: {totalTime}</div>
-                <div>Total allocations: {totalAlloc}</div>
+                <div>Total allocations: {formatBytes(totalAlloc)}</div>
             </div>
         </div>
 
