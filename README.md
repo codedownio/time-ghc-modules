@@ -1,9 +1,9 @@
 
 # time-ghc-modules
 
-Analyze how long it takes GHC to compile Haskell modules.
+Figure out why your builds are slow. This tool analyzes how long it takes GHC to compile your Haskell modules, broken down by phase.
 
-## Quick start (Stack)
+# Quick start
 
 ``` shell
 git clone git@github.com:codedownio/time-ghc-modules.git
@@ -17,20 +17,23 @@ cabal clean
 cabal build --TODO: figure out options
 ```
 
-### Nix
-
 If you have Nix, in the same folder just run:
 
 ``` haskell
 /path/to/time-ghc-modules/time-ghc-modules-nix
 ```
 
-### Non-Nix
-
 Otherwise, you need to have the following installed: `SQLite >= 3.33.0`, `Python 3`, and `sed`.
 
 ``` haskell
 /path/to/time-ghc-modules/time-ghc-modules
+```
+
+The script will search for all your `*.dump-timings` files and analyze them. It will finish by printing out the path to an HTML file:
+
+``` shell
+...
+--> Wrote report at file:///tmp/tmp.pvnp4FYmLa/report.html
 ```
 
 # Example: hledger
