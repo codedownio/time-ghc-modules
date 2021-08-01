@@ -3,18 +3,21 @@
 
 Analyze how long it takes GHC to compile Haskell modules.
 
-## Quick start
+## Quick start (Stack)
 
 ``` shell
 git clone git@github.com:codedownio/time-ghc-modules.git
 
-# Clean your project and build again to generate the .dump-timings files
 cd <my-project>
+
 stack clean
 stack build --ghc-options "-ddump-to-file -ddump-timings"
+# ----- OR -----
+cabal clean
+cabal build --TODO: figure out options
 ```
 
-## Nix
+### Nix
 
 If you have Nix, in the same folder just run:
 
@@ -22,7 +25,7 @@ If you have Nix, in the same folder just run:
 /path/to/time-ghc-modules/time-ghc-modules-nix
 ```
 
-## Non-Nix
+### Non-Nix
 
 Otherwise, you need to have the following installed: `SQLite >= 3.33.0`, `Python 3`, and `sed`.
 
