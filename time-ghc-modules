@@ -33,9 +33,9 @@ cat timings.tsv | sqlite3 --init "$commandfile" "timings.db"
 
 echo "{" > data.json
 echo "\"phasesByTime\": $(sqlite3 -json timings.db "select phase, sum(time) as time from events group by phase order by sum(time) desc;")," >> data.json
-echo "\"phasesByAlloc\": $(sqlite3 -json timings.db "select phase, sum(alloc) as alloc from events group by phase order by sum(time) desc;")," >> data.json
+echo "\"phasesByAlloc\": $(sqlite3 -json timings.db "select phase, sum(alloc) as alloc from events group by phase order by sum(alloc) desc;")," >> data.json
 echo "\"modulesByTime\": $(sqlite3 -json timings.db "select module, sum(time) as time from events group by module order by sum(time) desc;")," >> data.json
-echo "\"modulesByAlloc\": $(sqlite3 -json timings.db "select module, sum(alloc) as alloc from events group by module order by sum(time) desc;")," >> data.json
+echo "\"modulesByAlloc\": $(sqlite3 -json timings.db "select module, sum(alloc) as alloc from events group by module order by sum(alloc) desc;")," >> data.json
 echo "\"modules\": $(sqlite3 -json timings.db "select module from events group by module order by module;")," >> data.json
 echo "\"data\": $(sqlite3 -json timings.db "select module, phase, sum(time) as time, sum(alloc) as alloc from events group by module, phase;")," >> data.json
 echo "}" >> data.json

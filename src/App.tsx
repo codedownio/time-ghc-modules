@@ -1,5 +1,8 @@
 
-import {reduce, size} from "lodash";
+import MenuItem from "@material-ui/core/MenuItem";
+import Select from "@material-ui/core/Select";
+
+import {map, reduce, size} from "lodash";
 import * as React from "react";
 
 import "tachyons";
@@ -32,9 +35,8 @@ type Aggregate = "time" | "alloc";
 export default function App() {
   const [aggregate, setAggregate] = React.useState<Aggregate>("time");
 
-  const totalTime = React.useMemo(() =>
-    reduce(data.phasesByTime, (result, value) => result + value.time, 0)
-  , [data]);
+  const totalTime = React.useMemo(() => reduce(data.phasesByTime, (n, value) => n + value.time, 0), [data]);
+  const totalAlloc = React.useMemo(() => reduce(data.phasesByAlloc, (n, value) => n + value.alloc, 0), [data]);
 
   console.log("Got data", data);
 
@@ -51,7 +53,7 @@ export default function App() {
       names.push(module.module);
     }
     return [ret, names]
-  }, [data]);
+  }, [modulesList]);
 
   const series = React.useMemo(() => {
     const ret = [];
@@ -72,35 +74,45 @@ export default function App() {
     }
 
     return ret;
-  }, [data, moduleToIndex]);
+  }, [phasesList, moduleToIndex, aggregate]);
 
   console.log("Made series", series);
 
-  /* const [finalSeries, finalModuleNames] = React.useMemo(() => {
-   *   const numModules = 200;
+  const [finalSeries, finalModuleNames] = React.useMemo(() => {
+    const numModules = 20;
 
-   *   const finalSeries = map(series, (x) => ({
-   *     name: x.name,
-   *     data: x.data.slice(0, numModules)
-   *   }));
+    const finalSeries = map(series, (x) => ({
+      name: x.name,
+      data: x.data.slice(0, numModules)
+    }));
 
-   *   return [finalSeries, moduleNames.slice(0, numModules)];
-   * }, [series, moduleNames]); */
+    return [finalSeries, moduleNames.slice(0, numModules)];
+  }, [series, moduleNames]);
+
+  console.log("Got aggregate", aggregate);
+
+  const handleSetAggregate = React.useCallback((event) => setAggregate(event.target.value), [setAggregate]);
 
   return (
     <div className="center w-80">
-        <div>
+        <div className="ba b--silver pa1 mv1 flex flex-row justify-between">
             <div>
-                Total time: {totalTime}
+                <Select value={aggregate}
+                        onChange={handleSetAggregate}>
+                    <MenuItem value="time">Time (ms)</MenuItem>
+                    <MenuItem value="alloc">Allocations (bytes)</MenuItem>
+                </Select>
             </div>
 
-            <div>
-
+            <div className="">
+                <div>Total time: {totalTime}</div>
+                <div>Total allocations: {totalAlloc}</div>
             </div>
         </div>
 
-        <Chart series={series}
-               categories={moduleNames} />
+        <Chart title={"Build report by " + aggregate}
+               series={finalSeries}
+               categories={finalModuleNames} />
     </div>
   );
 }
