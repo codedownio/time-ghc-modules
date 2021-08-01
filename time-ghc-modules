@@ -20,7 +20,7 @@ NUM_EVENTS=$(cat timings.tsv | wc -l)
 
 echo "Processed $NUM_PROCESSED *.dump-timings files containing $NUM_EVENTS events"
 if (( "$NUM_FAILURES" > 0 )); then
-    echo "Failed to parse $NUM_FAILURES lines"
+    echo "Failed to parse $NUM_FAILURES lines (see $(pwd)/failures)"
 fi
 
 commandfile=$(mktemp)
