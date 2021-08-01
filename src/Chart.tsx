@@ -20,7 +20,6 @@ export default function ApexChart({title, series, categories, xLabel, formatter}
         enabled: false
       },
       type: "bar",
-      /*           height: baseHeight + (16 * categories.length), */
       stacked: true,
     },
     plotOptions: {
@@ -51,8 +50,7 @@ export default function ApexChart({title, series, categories, xLabel, formatter}
       },
     },
     dataLabels: {
-      enabled: true,
-      formatter
+      enabled: false,
     },
     tooltip: {
       y: { formatter }

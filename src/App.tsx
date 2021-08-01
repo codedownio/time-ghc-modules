@@ -25,15 +25,14 @@ interface ModuleData {
   data: Array<Event>;
 }
 
-// Inserted by the Node server
-// @ts-ignore
+// @ts-ignore, inserted into the HTML
 const data: ModuleData = window.module_data;
 
 type Aggregate = "time" | "alloc";
 
 export default function App() {
   const [aggregate, setAggregate] = React.useState<Aggregate>("time");
-  const [numModulesToShow, setNumModulesToShow] = React.useState(20);
+  const [numModulesToShow, setNumModulesToShow] = React.useState(50);
 
   const totalTime = React.useMemo(() => reduce(data.phasesByTime, (n, value) => n + value.time, 0), [data]);
   const totalAlloc = React.useMemo(() => reduce(data.phasesByAlloc, (n, value) => n + value.alloc, 0), [data]);
