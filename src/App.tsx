@@ -107,6 +107,7 @@ export default function App() {
                     <MenuItem value={20}>Top 20 modules</MenuItem>
                     <MenuItem value={50}>Top 50 modules</MenuItem>
                     <MenuItem value={100}>Top 100 modules</MenuItem>
+                    <MenuItem value={Infinity}>All modules</MenuItem>
                 </Select>
             </div>
 

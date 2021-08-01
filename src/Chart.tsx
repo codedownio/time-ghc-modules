@@ -46,6 +46,9 @@ export default function ApexChart({title, series, categories, xLabel, formatter}
       title: {
         text: "Module"
       },
+      labels: {
+        maxWidth: 320
+      },
     },
     dataLabels: {
       enabled: true,
