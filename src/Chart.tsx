@@ -47,6 +47,10 @@ export default function ApexChart({title, series, categories, xLabel, formatter}
         text: "Module"
       },
     },
+    dataLabels: {
+      enabled: true,
+      formatter
+    },
     tooltip: {
       y: { formatter }
     },
