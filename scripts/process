@@ -10,14 +10,22 @@ REPLACE='todo-package\t\2\t\1\t\3\t\4'
 
 TMP_FAILURES=$(mktemp)
 TMP_MATCHES=$(mktemp)
+SYSTOOL_MATCHES=$(mktemp)
 
 # TODO: do the following with a single sed command to cut runtime by 50%
 # (couldn't figure out how to sub the replacement while also writing out the failures)
 
 sed -n "/$PATTERN/p; //! w $TMP_FAILURES" "$DUMP_TIMINGS" > "$TMP_MATCHES"
 
-cat "$TMP_FAILURES" >> "$FAILURES"
+# Special case: process lines like systool:as:,
+SYSTOOL_PATTERN='\(systool:.*\):.*alloc=\([0-9]*\).*time=\([0-9\.]*\).*'
+SYSTOOL_REPLACE='ghc\tsystool\t\1\t\2\t\3'
+sed -n "/$SYSTOOL_PATTERN/p; //! w $FAILURES" "$TMP_FAILURES" > "$SYSTOOL_MATCHES"
+
 rm "$TMP_FAILURES"
 
 sed -n "s/$PATTERN/$REPLACE/p" "$TMP_MATCHES" >> "$TSV"
 rm $TMP_MATCHES
+
+sed -n "s/$SYSTOOL_PATTERN/$SYSTOOL_REPLACE/p" "$SYSTOOL_MATCHES" >> "$TSV"
+rm $SYSTOOL_MATCHES
