@@ -3,4 +3,4 @@ set -euo pipefail
 
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 
-$(nix-build $SCRIPT_DIR)/bin/time-ghc-modules "$@"
+$(nix-build --no-out-link $SCRIPT_DIR)/bin/time-ghc-modules "$@"

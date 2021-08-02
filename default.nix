@@ -17,7 +17,7 @@ runCommand "time-ghc-modules" {
 } ''
   mkdir -p $out/bin
   cp $script $out/bin/time-ghc-modules
-  wrapProgram $out/bin/time-ghc-modules --prefix PATH : ${lib.makeBinPath [ sqlite ]}
+  wrapProgram $out/bin/time-ghc-modules --prefix PATH : ${lib.makeBinPath [ sqlite python3 coreutils findutils gnused ]}
 
   mkdir -p $out/bin/scripts
   ln -s $process $out/bin/scripts/process
