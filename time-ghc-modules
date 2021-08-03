@@ -6,7 +6,7 @@ SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 cwd=$(pwd)
 
 dir=$(mktemp -d)
-echo "Working dir: $dir"
+>&2 echo "Working dir: $dir"
 cd "$dir"
 
 echo | sqlite3 timings.db <<- EOM
@@ -18,9 +18,9 @@ NUM_PROCESSED=$(find "$cwd" -name "*.dump-timings" -printf '.' -exec $SCRIPT_DIR
 NUM_FAILURES=$(cat failures | wc -l)
 NUM_EVENTS=$(cat timings.tsv | wc -l)
 
-echo "Processed $NUM_PROCESSED *.dump-timings files containing $NUM_EVENTS events"
+>&2 echo "Processed $NUM_PROCESSED *.dump-timings files containing $NUM_EVENTS events"
 if (( "$NUM_FAILURES" > 0 )); then
-    echo "Failed to parse $NUM_FAILURES lines (see $(pwd)/failures)"
+    >&2 echo "Failed to parse $NUM_FAILURES lines (see $(pwd)/failures)"
 fi
 
 commandfile=$(mktemp)
@@ -47,4 +47,6 @@ with open('report.html', 'w') as report:
       report.write(template.read().replace('"INSERT_DATA_HERE"', dat.read()))
 _EOT_
 
-echo "--> Wrote report at file://$(pwd)/report.html"
+>&2 echo "--> Wrote report at file://$(pwd)/report.html"
+
+echo "$(pwd)/report.html"
