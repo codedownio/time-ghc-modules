@@ -51,3 +51,7 @@ stack build --ghc-options "-ddump-to-file -ddump-timings"
 ```
 
 ![hledger profile](./hledger.png)
+
+# Compatibility
+
+The flag `-ddump-timings` is available for `GHC >= 8.4.1`.
