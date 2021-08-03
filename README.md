@@ -3,6 +3,8 @@
 
 Figure out why your builds are slow. This tool analyzes how long it takes GHC to compile your Haskell modules, broken down by phase.
 
+The flag `-ddump-timings` is needed and available when `GHC >= 8.4.1`.
+
 # Quick start
 
 ``` shell
