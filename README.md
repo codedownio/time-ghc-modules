@@ -52,6 +52,20 @@ stack build --ghc-options "-ddump-to-file -ddump-timings"
 
 ![hledger profile](./hledger.png)
 
+# Tips
+
+The script will output its log messages to `stderr` and print the final report path to `stdout` (assuming it didn't exit with a failure). This makes it easy to use the output in scripts. For example:
+
+``` shell
+# Build the report and open it in your browser
+> firefox $(/path/to/time-ghc-modules/time-ghc-modules)
+```
+
+``` shell
+# Build the report in CI and stash it somewhere
+> cp $(/path/to/time-ghc-modules/time-ghc-modules) $MY_CI_ARTIFACTS_DIR/
+```
+
 # Compatibility
 
 The flag `-ddump-timings` is available for `GHC >= 8.4.1`.
