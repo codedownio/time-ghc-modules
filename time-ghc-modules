@@ -1,7 +1,15 @@
 #!/usr/bin/env bash
-set -euo pipefail
+set -eo pipefail
 
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
+
+if [ -z "$PROCESS_SCRIPT" ]; then
+  PROCESS_SCRIPT="$SCRIPT_DIR/scripts/process"
+fi
+
+if [ -z "$HTML_FILE" ]; then
+  HTML_FILE="${SCRIPT_DIR}/dist/index.html"
+fi
 
 cwd=$(pwd)
 
@@ -14,7 +22,7 @@ CREATE TABLE events (package TEXT, module TEXT, phase TEXT, alloc INTEGER, time 
 EOM
 
 touch failures
-NUM_PROCESSED=$(find "$cwd" -name "*.dump-timings" -printf '.' -exec $SCRIPT_DIR/scripts/process timings.tsv failures {} \; | wc -c)
+NUM_PROCESSED=$(find "$cwd" -name "*.dump-timings" -printf '.' -exec $PROCESS_SCRIPT timings.tsv failures {} \; | wc -c)
 NUM_FAILURES=$(cat failures | wc -l)
 NUM_EVENTS=$(cat timings.tsv | wc -l)
 
@@ -42,7 +50,7 @@ echo "}" >> data.json
 
 python - <<-_EOT_
 with open('report.html', 'w') as report:
-  with open("${SCRIPT_DIR}/dist/index.html", 'r') as template:
+  with open("${HTML_FILE}", 'r') as template:
     with open('data.json', 'r') as dat:
       report.write(template.read().replace('"INSERT_DATA_HERE"', dat.read()))
 _EOT_
