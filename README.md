@@ -15,13 +15,13 @@ cabal clean
 cabal build --ghc-options "-ddump-to-file -ddump-timings"
 ```
 
-If you have Nix, you can simply run the version in Nixpkgs!
+If you have Nix, you can simply run `time-ghc-modules` from Nixpkgs!
 
 ``` bash
 nix run nixpkgs#time-ghc-modules
 ```
 
-To run it from the repo:
+Or, clone the repo first:
 
 ``` haskell
 git clone git@github.com:codedownio/time-ghc-modules.git /path/to/time-ghc-modules
