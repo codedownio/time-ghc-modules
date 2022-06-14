@@ -6,8 +6,6 @@ Figure out why your builds are slow. This tool analyzes how long it takes GHC to
 # Quick start
 
 ``` shell
-git clone git@github.com:codedownio/time-ghc-modules.git
-
 cd <my-project>
 
 stack clean
@@ -17,15 +15,21 @@ cabal clean
 cabal build --ghc-options "-ddump-to-file -ddump-timings"
 ```
 
-If you have Nix, in the same folder just run:
+If you have Nix, you can simply run the version in Nixpkgs!
 
-``` haskell
-/path/to/time-ghc-modules/time-ghc-modules-nix
+``` bash
+nix run nixpkgs#time-ghc-modules
 ```
 
-Otherwise, you need to have the following installed: `SQLite >= 3.33.0`, `Python 3`, and `sed`.
+To run it from the repo:
 
 ``` haskell
+git clone git@github.com:codedownio/time-ghc-modules.git /path/to/time-ghc-modules
+
+# If you have Nix, you can use the fully reproducible version
+/path/to/time-ghc-modules/time-ghc-modules-nix
+
+# Otherwise, your system needs to have SQLite >= 3.33.0, Python 3, and sed
 /path/to/time-ghc-modules/time-ghc-modules
 ```
 
