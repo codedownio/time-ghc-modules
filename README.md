@@ -17,13 +17,13 @@ cabal build --ghc-options "-ddump-to-file -ddump-timings"
 
 If you have Nix, you can simply run `time-ghc-modules` from Nixpkgs!
 
-``` bash
+``` shell
 nix run nixpkgs#time-ghc-modules
 ```
 
 Or, clone the repo first:
 
-``` haskell
+``` shell
 git clone git@github.com:codedownio/time-ghc-modules.git /path/to/time-ghc-modules
 
 # If you have Nix, you can use the fully reproducible version
@@ -44,7 +44,7 @@ The script will search for all your `*.dump-timings` files and analyze them. It 
 
 You can generate the time report below for [hledger](https://github.com/simonmichael/hledger) by running the following commands (assuming you have Nix).
 
-``` bash
+``` shell
 set -e
 cd $(mktemp -d)
 git clone git@github.com:simonmichael/hledger.git
