@@ -28,9 +28,11 @@ interface ModuleData {
 // @ts-ignore, inserted into the HTML
 const data: ModuleData = window.module_data;
 
+type Visualization = "bars" | "treemap";
 type Aggregate = "time" | "alloc";
 
 export default function App() {
+  const [visualization, setVisualization] = React.useState<Visualization>("bars");
   const [aggregate, setAggregate] = React.useState<Aggregate>("time");
   const [numModulesToShow, setNumModulesToShow] = React.useState(50);
 
@@ -72,10 +74,10 @@ export default function App() {
       ret[phaseToIndex[event.phase]].data[moduleToIndex[event.module]] = event[aggregate];
     }
 
+    console.log("Made series", ret);
+
     return ret;
   }, [phasesList, moduleToIndex, aggregate]);
-
-  console.log("Made series", series);
 
   const [finalSeries, finalModuleNames] = React.useMemo(() => {
     const finalSeries = map(series, (x) => ({
@@ -83,9 +85,15 @@ export default function App() {
       data: x.data.slice(0, numModulesToShow)
     }));
 
-    return [finalSeries, moduleNames.slice(0, numModulesToShow)];
+    const finalModuleNames = moduleNames.slice(0, numModulesToShow);
+
+    console.log("Made finalSeries", finalSeries);
+    console.log("Made finalModuleNames", finalModuleNames);
+
+    return [finalSeries, finalModuleNames];
   }, [series, moduleNames, numModulesToShow]);
 
+  const handleSetVisualization = React.useCallback((event) => setVisualization(event.target.value), [setVisualization]);
   const handleSetAggregate = React.useCallback((event) => setAggregate(event.target.value), [setAggregate]);
   const handleSetNumModulesToShow = React.useCallback((event) => setNumModulesToShow(event.target.value), [setNumModulesToShow]);
 
@@ -93,21 +101,30 @@ export default function App() {
     <div className="center w-80">
         <div className="ba b--silver pa1 mv1 flex flex-row justify-between">
             <div>
-                <Select value={aggregate}
+                <Select value={visualization}
+                        onChange={handleSetVisualization}>
+                    <MenuItem value="bars">Bar chart</MenuItem>
+                    <MenuItem value="treemap">Treemap</MenuItem>
+                </Select>
+
+                <Select className="ml2"
+                        value={aggregate}
                         onChange={handleSetAggregate}>
                     <MenuItem value="time">Time (ms)</MenuItem>
                     <MenuItem value="alloc">Allocations (bytes)</MenuItem>
                 </Select>
 
-                <Select className="ml2"
-                        value={numModulesToShow}
-                        onChange={handleSetNumModulesToShow}>
-                    <MenuItem value={10}>Top 10 modules</MenuItem>
-                    <MenuItem value={20}>Top 20 modules</MenuItem>
-                    <MenuItem value={50}>Top 50 modules</MenuItem>
-                    <MenuItem value={100}>Top 100 modules</MenuItem>
-                    <MenuItem value={Infinity}>All modules</MenuItem>
-                </Select>
+                {visualization === "bars" &&
+                 <Select className="ml2"
+                         value={numModulesToShow}
+                         onChange={handleSetNumModulesToShow}>
+                     <MenuItem value={10}>Top 10 modules</MenuItem>
+                     <MenuItem value={20}>Top 20 modules</MenuItem>
+                     <MenuItem value={50}>Top 50 modules</MenuItem>
+                     <MenuItem value={100}>Top 100 modules</MenuItem>
+                     <MenuItem value={Infinity}>All modules</MenuItem>
+                 </Select>
+                }
             </div>
 
             <div className="dib">
