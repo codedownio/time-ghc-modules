@@ -1,9 +1,8 @@
 
-import {size} from "lodash";
+import {forEach, size} from "lodash";
 import {useMemo} from "react";
-import {Treemap as RVTreeMap} from "react-vis";
 
-import * as styles from "react-vis/dist/style.css";
+import D3TreeMap from "./D3TreeMap";
 
 // import {formatBytes, formatTime} from "./Util";
 
@@ -30,8 +29,9 @@ export default function TreeMap({aggregate, data}: Props) {
       let current = ret;
       let soFar = "";
       const parts = module.module.split(".");
-      for (const part of parts) {
-        soFar += "." + part;
+      for (let i = 0; i < parts.length; i += 1) {
+        const part = parts[i];
+        soFar += (i === 0 ? part : "." + part);
         current.children[part] = current.children[part] || {
           title: soFar,
           value: 0,
@@ -41,53 +41,70 @@ export default function TreeMap({aggregate, data}: Props) {
         current.value += (aggregate === "time" ? module["time"]: module["alloc"]);
       }
     }
+    forEach(ret.children, (x) => {
+      ret.value += x.value;
+    });
 
     console.log("Built nestedData", ret);
 
     return ret;
   }, [modulesList]);
 
-  const myData = {
-    "title": "analytics",
+  const myData: Tree<TreeNode> = {
+    "name": "analytics",
     "color": "#12939A",
+    "size": 48716,
     "children": [
       {
-        "title": "cluster",
+        "name": "cluster",
+        "color": "#12939A",
+        "size": 15207,
         "children": [
-          {"title": "AgglomerativeCluster", "color": "#12939A", "size": 3938},
-          {"title": "CommunityStructure", "color": "#12939A", "size": 3812},
-          {"title": "HierarchicalCluster", "color": "#12939A", "size": 6714},
-          {"title": "MergeEdge", "color": "#12939A", "size": 743}
+          {"name": "AgglomerativeCluster", "color": "#12939A", "size": 3938},
+          {"name": "CommunityStructure", "color": "#12939A", "size": 3812},
+          {"name": "HierarchicalCluster", "color": "#12939A", "size": 6714},
+          {"name": "MergeEdge", "color": "#12939A", "size": 743}
         ]
       },
       {
-        "title": "graph",
+        "name": "graph",
+        "color": "#12939A",
+        "size": 26435,
         "children": [
-          {"title": "BetweennessCentrality", "color": "#12939A", "size": 3534},
-          {"title": "LinkDistance", "color": "#12939A", "size": 5731},
-          {"title": "MaxFlowMinCut", "color": "#12939A", "size": 7840},
-          {"title": "ShortestPaths", "color": "#12939A", "size": 5914},
-          {"title": "SpanningTree", "color": "#12939A", "size": 3416}
+          {"name": "BetweennessCentrality", "color": "#12939A", "size": 3534},
+          {"name": "LinkDistance", "color": "#12939A", "size": 5731},
+          {"name": "MaxFlowMinCut", "color": "#12939A", "size": 7840},
+          {"name": "ShortestPaths", "color": "#12939A", "size": 5914},
+          {"name": "SpanningTree", "color": "#12939A", "size": 3416}
         ]
       },
       {
-        "title": "optimization",
+        "name": "optimization",
+        "color": "#12939A",
+        "size": 7074,
         "children": [
-          {"title": "AspectRatioBanker", "color": "#12939A", "size": 7074}
+          {"name": "AspectRatioBanker", "color": "#12939A", "size": 7074}
         ]
       }
     ]
-  }
+  };
 
   // Modes: squarify, resquarify, slice, dice, slicedice, binary, circlePack, partition, partition-pivot
 
   return (
-    <RVTreeMap
-      title={'My New Treemap'}
+    <D3TreeMap
       width={500}
       height={500}
       data={myData}
-      mode="squarify"
+      labelFn={(x) => {
+        return x.name;
+      }}
+      subLabelFn={(x) => {
+        return x.size + " UNITS";
+      }}
+      valueFn={(x) => {
+        return x.size;
+      }}
     />
   );
 }
