@@ -6,6 +6,7 @@ import {reduce} from "lodash";
 import * as React from "react";
 
 import Bars from "./Bars";
+import TreeMap from "./TreeMap";
 import {formatBytes, formatTime} from "./Util";
 
 
@@ -73,6 +74,11 @@ export default function App() {
          <Bars aggregate={aggregate}
                data={data}
                numModulesToShow={numModulesToShow} />
+        }
+
+        {visualization === "treemap" &&
+         <TreeMap aggregate={aggregate}
+                  data={data} />
         }
     </div>
   );

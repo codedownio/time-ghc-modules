@@ -1,5 +1,6 @@
 
 import {map, size} from "lodash";
+import {useMemo} from "react";
 import * as React from "react";
 
 import Chart from "./Chart";
@@ -17,7 +18,7 @@ export default function Bars({aggregate, data, numModulesToShow}: Props) {
   const phasesList = aggregate === "time" ? data.phasesByTime : data.phasesByAlloc;
   const numModules = size(modulesList);
 
-  const [moduleToIndex, moduleNames] = React.useMemo(() => {
+  const [moduleToIndex, moduleNames] = useMemo(() => {
     const ret = {};
     const names = [];
     let counter = 0;
@@ -28,7 +29,7 @@ export default function Bars({aggregate, data, numModulesToShow}: Props) {
     return [ret, names]
   }, [modulesList]);
 
-  const series = React.useMemo(() => {
+  const series = useMemo(() => {
     const ret = [];
 
     const phaseToIndex = {};
@@ -51,7 +52,7 @@ export default function Bars({aggregate, data, numModulesToShow}: Props) {
     return ret;
   }, [phasesList, moduleToIndex, aggregate]);
 
-  const [finalSeries, finalModuleNames] = React.useMemo(() => {
+  const [finalSeries, finalModuleNames] = useMemo(() => {
     const finalSeries = map(series, (x) => ({
       name: x.name,
       data: x.data.slice(0, numModulesToShow)
