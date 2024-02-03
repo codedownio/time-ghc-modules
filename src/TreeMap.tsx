@@ -1,5 +1,6 @@
 
 import {size} from "lodash";
+import {useMemo} from "react";
 import {Treemap as RVTreeMap} from "react-vis";
 
 import * as styles from "react-vis/dist/style.css";
@@ -17,6 +18,34 @@ export default function TreeMap({aggregate, data}: Props) {
   const numModules = size(modulesList);
 
   console.log("modulesList", modulesList);
+
+  const nestedData = useMemo(() => {
+    const ret = {
+      title: "Top-level",
+      value: 0,
+      children: {},
+    };
+
+    for (const module of modulesList) {
+      let current = ret;
+      let soFar = "";
+      const parts = module.module.split(".");
+      for (const part of parts) {
+        soFar += "." + part;
+        current.children[part] = current.children[part] || {
+          title: soFar,
+          value: 0,
+          children: {}
+        }
+        current = current.children[part];
+        current.value += (aggregate === "time" ? module["time"]: module["alloc"]);
+      }
+    }
+
+    console.log("Built nestedData", ret);
+
+    return ret;
+  }, [modulesList]);
 
   const myData = {
     "title": "analytics",
@@ -55,10 +84,10 @@ export default function TreeMap({aggregate, data}: Props) {
   return (
     <RVTreeMap
       title={'My New Treemap'}
-      width={300}
-      height={300}
+      width={500}
+      height={500}
       data={myData}
-      mode="binary"
+      mode="squarify"
     />
   );
 }

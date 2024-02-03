@@ -5,6 +5,8 @@ import Select from "@material-ui/core/Select";
 import {reduce} from "lodash";
 import * as React from "react";
 
+import "tachyons";
+
 import Bars from "./Bars";
 import TreeMap from "./TreeMap";
 import {formatBytes, formatTime} from "./Util";
