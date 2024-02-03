@@ -27,5 +27,5 @@ interface TreeNode {
   name: string;
   part: string;
   color?: string;
-  size: number;
+  value: number;
 }

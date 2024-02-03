@@ -8,7 +8,7 @@ export default function buildNestedData(
 ) {
   const ret: Tree<TreeNode> = {
     name: "Top-level",
-    size: 0,
+    value: 0,
     part: "",
     children: [],
   };
@@ -26,17 +26,17 @@ export default function buildNestedData(
         item = {
           name: soFar,
           part,
-          size: 0,
+          value: 0,
           children: [],
         };
         current.children.push(item);
       }
       current = item;
-      current.size += (aggregate === "time" ? m["time"]: m["alloc"]);
+      current.value += (aggregate === "time" ? m["time"]: m["alloc"]);
     }
   }
   forEach(ret.children, (x) => {
-    ret.size += x.size;
+    ret.value += x.value;
   });
 
   console.log("Built nestedData", ret);
