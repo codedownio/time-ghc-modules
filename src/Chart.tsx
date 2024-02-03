@@ -8,13 +8,13 @@ interface Props {
   series: Array<{name: string; data: number[];}>;
   categories: Array<string | number>;
   xLabel: string;
-  formatter: (value: number) => string;
+  formatter: (value: number | string) => string;
 };
 
 const baseHeight = 200;
 
-export default function ApexChart({title, series, categories, xLabel, formatter}) {
-  const options = React.useMemo(() => ({
+export default function ApexChart({title, series, categories, xLabel, formatter}: Props) {
+  const options: ApexCharts.ApexOptions = React.useMemo(() => ({
     chart: {
       animations: {
         enabled: false

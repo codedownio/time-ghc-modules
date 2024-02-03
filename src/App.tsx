@@ -2,34 +2,15 @@
 import MenuItem from "@material-ui/core/MenuItem";
 import Select from "@material-ui/core/Select";
 
-import {map, reduce, size} from "lodash";
+import {reduce} from "lodash";
 import * as React from "react";
 
-import Chart from "./Chart";
+import Bars from "./Bars";
 import {formatBytes, formatTime} from "./Util";
 
 
-interface Event {
-  module: string;
-  phase: string;
-  time: number;
-  alloc: number;
-};
-
-interface ModuleData {
-  phasesByAlloc: Array<{phase: string, alloc: number}>;
-  phasesByTime: Array<{phase: string, time: number}>;
-  modulesByAlloc: Array<{module: string, alloc: number}>;
-  modulesByTime: Array<{module: string, time: number}>;
-  modules: Array<{module: string;}>;
-  data: Array<Event>;
-}
-
 // @ts-ignore, inserted into the HTML
 const data: ModuleData = window.module_data;
-
-type Visualization = "bars" | "treemap";
-type Aggregate = "time" | "alloc";
 
 export default function App() {
   const [visualization, setVisualization] = React.useState<Visualization>("bars");
@@ -40,58 +21,6 @@ export default function App() {
   const totalAlloc = React.useMemo(() => reduce(data.phasesByAlloc, (n, value) => n + value.alloc, 0), [data]);
 
   console.log("Got data", data);
-
-  const modulesList = aggregate === "time" ? data.modulesByTime : data.modulesByAlloc;
-  const phasesList = aggregate === "time" ? data.phasesByTime : data.phasesByAlloc;
-  const numModules = size(modulesList);
-
-  const [moduleToIndex, moduleNames] = React.useMemo(() => {
-    const ret = {};
-    const names = [];
-    let counter = 0;
-    for (let module of modulesList) {
-      ret[module.module] = counter++;
-      names.push(module.module);
-    }
-    return [ret, names]
-  }, [modulesList]);
-
-  const series = React.useMemo(() => {
-    const ret = [];
-
-    const phaseToIndex = {};
-    let counter = 0;
-
-    // Allocate empty vectors for every series
-    for (let phase of phasesList) {
-      const name = phase.phase;
-      phaseToIndex[name] = counter++;
-      ret.push({name, data: Array(numModules).fill(0)})
-    }
-
-    // Pass over all the data
-    for (let event of data.data) {
-      ret[phaseToIndex[event.phase]].data[moduleToIndex[event.module]] = event[aggregate];
-    }
-
-    console.log("Made series", ret);
-
-    return ret;
-  }, [phasesList, moduleToIndex, aggregate]);
-
-  const [finalSeries, finalModuleNames] = React.useMemo(() => {
-    const finalSeries = map(series, (x) => ({
-      name: x.name,
-      data: x.data.slice(0, numModulesToShow)
-    }));
-
-    const finalModuleNames = moduleNames.slice(0, numModulesToShow);
-
-    console.log("Made finalSeries", finalSeries);
-    console.log("Made finalModuleNames", finalModuleNames);
-
-    return [finalSeries, finalModuleNames];
-  }, [series, moduleNames, numModulesToShow]);
 
   const handleSetVisualization = React.useCallback((event) => setVisualization(event.target.value), [setVisualization]);
   const handleSetAggregate = React.useCallback((event) => setAggregate(event.target.value), [setAggregate]);
@@ -140,11 +69,11 @@ export default function App() {
             </div>
         </div>
 
-        <Chart title={"Build report by " + aggregate}
-               series={finalSeries}
-               categories={finalModuleNames}
-               xLabel={aggregate === "time" ? "Time" : "Allocations"}
-               formatter={aggregate === "time" ? formatTime : formatBytes} />
+        {visualization === "bars" &&
+         <Bars aggregate={aggregate}
+               data={data}
+               numModulesToShow={numModulesToShow} />
+        }
     </div>
   );
 }
