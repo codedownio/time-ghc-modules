@@ -25,6 +25,7 @@ type Tree<D> = D & {
 
 interface TreeNode {
   name: string;
-  color: string;
+  part: string;
+  color?: string;
   size: number;
 }
