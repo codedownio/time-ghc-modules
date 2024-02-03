@@ -37,7 +37,7 @@ jobs:
       run: |
         git clone https://github.com/simonmichael/hledger.git
         cd hledger
-        -- TODO: just shallow clone this somehow. Use Nix?
+        # TODO: just shallow clone this somehow. Use Nix?
         git reset --hard d702788a6432fa9ae49da082987463f7b907572c
 
     - name: Build
