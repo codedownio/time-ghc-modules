@@ -1,0 +1,55 @@
+name: time-ghc-modules
+
+on:
+  pull_request:
+  push:
+
+jobs:
+  cabal:
+    name: ${{ matrix.os }} / ghc ${{ matrix.ghc }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macOS-latest]
+        ghc:
+          - "8.10.7"
+          - "9.0.2"
+          - "9.2.8"
+          - "9.4.7"
+          - "9.6.3"
+          - "9.8.1"
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - uses: haskell/actions/setup@v2
+      id: setup-haskell-cabal
+      name: Setup Haskell
+      with:
+        ghc-version: ${{ matrix.ghc }}
+        cabal-version: "latest"
+
+    - uses: actions/cache@v3
+      name: Cache ~/.cabal/store
+      with:
+        path: ${{ steps.setup-haskell-cabal.outputs.cabal-store }}
+        key: ${{ runner.os }}-${{ matrix.ghc }}-${{ hashFiles('cabal.project.freeze') }}
+
+    - name: Clone hledger
+      run: |
+        git clone git@github.com:simonmichael/hledger.git
+        cd hledger
+        -- TODO: just shallow clone this somehow. Use Nix?
+        git reset --hard d702788a6432fa9ae49da082987463f7b907572c
+
+    - name: Build
+      run: |
+        cd hledger
+        cabal clean
+        cabal build --ghc-options "-ddump-to-file -ddump-timings"
+
+    - name: Clean run
+      run: |
+        cd hledger
+        ../time-ghc-modules
