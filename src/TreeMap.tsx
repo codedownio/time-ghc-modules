@@ -4,7 +4,7 @@ import {useMemo} from "react";
 
 import D3TreeMap from "./D3TreeMap";
 
-// import {formatBytes, formatTime} from "./Util";
+import {formatBytes, formatTime} from "./Util";
 
 
 interface Props {
@@ -100,7 +100,7 @@ export default function TreeMap({aggregate, data}: Props) {
         return x.name;
       }}
       subLabelFn={(x) => {
-        return x.size + " UNITS";
+        return aggregate === "time" ? formatTime(x.size) : formatBytes(size);
       }}
       valueFn={(x) => {
         return x.size;
