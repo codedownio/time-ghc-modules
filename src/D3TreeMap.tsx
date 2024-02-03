@@ -87,7 +87,7 @@ export default class TreeMap<D> extends PureComponent<ITreeMapProps<D>, ITreeMap
     }
   }
 
-  drawData(svg: SVGSVGElement, treemap, data) {
+  drawData(svg: SVGSVGElement, treemap: TreemapLayout<D>, data: Tree<D>) {
     const fader = (color) => interpolateRgb(color, "#fff")(0.2);
     const color = scaleOrdinal(schemeCategory10.map(fader));
 
@@ -97,8 +97,6 @@ export default class TreeMap<D> extends PureComponent<ITreeMapProps<D>, ITreeMap
       .sort((a, b) => b.height - a.height || b.value - a.value);
 
     treemap(root);
-
-    console.log("root", root);
 
     const cell = select(svg)
       .selectAll("g")
