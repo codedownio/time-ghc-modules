@@ -2,7 +2,7 @@
 import {size} from "lodash";
 import {Treemap as RVTreeMap} from "react-vis";
 
-import "react-vis/dist/style.css";
+import * as styles from "react-vis/dist/style.css";
 
 // import {formatBytes, formatTime} from "./Util";
 
