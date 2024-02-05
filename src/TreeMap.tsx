@@ -4,7 +4,7 @@ import * as chromatic from "d3-scale-chromatic";
 import { debounce } from "lodash";
 import { CSSProperties, useEffect, useMemo, useRef, useState} from "react";
 
-import buildNestedData from "./TreeMap/BuildData";
+import buildNestedData, {removeEmptyNodes} from "./TreeMap/BuildData";
 import {formatBytes, formatTime} from "./Util";
 
 // import SimpleD3TreeMap from "./D3TreeMap";
@@ -33,13 +33,13 @@ const svgStyle: CSSProperties = {
 export default function TreeMap({aggregate, data}: Props) {
   const modulesList = aggregate === "time" ? data.modulesByTime : data.modulesByAlloc;
 
-  const nestedData: Tree<TreeNode> = useMemo(() => buildNestedData(aggregate, modulesList), [aggregate, modulesList]);
+  const nestedData: Tree<TreeNode> = useMemo(() => {
+    const tree = buildNestedData(aggregate, modulesList);
+    return removeEmptyNodes(tree);
+  }, [aggregate, modulesList]);
 
   const ref = useRef(null);
-  const [dimensions, setDimensions] = useState<{ height: number, width: number } | null>(() => {
-    console.log("ref.current", ref.current);
-    return null;
-  });
+  const [dimensions, setDimensions] = useState<{ height: number, width: number } | null>(null);
   const elementObserver = useMemo(() => {
     return new ResizeObserver(() => {
       debounce(() => {
@@ -61,14 +61,13 @@ export default function TreeMap({aggregate, data}: Props) {
     };
   }, [ref.current, elementObserver]);
 
-  // Modes: squarify, resquarify, slice, dice, slicedice, binary, circlePack, partition, partition-pivot
-
   return (
     <div ref={ref}
          style={wrapperStyle}>
 
       {dimensions &&
        <D3TreeMap<Tree<TreeNode>>
+         key={aggregate}
          id="myTreeMap"
          width={dimensions.width + paddingPx}
          svgStyle={svgStyle}
