@@ -16,7 +16,7 @@ import {formatBytes, formatTime} from "./Util";
 const data: ModuleData = window.module_data;
 
 export default function App() {
-  const [visualization, setVisualization] = React.useState<Visualization>("bars");
+  const [visualization, setVisualization] = React.useState<Visualization>("treemap");
   const [aggregate, setAggregate] = React.useState<Aggregate>("time");
   const [numModulesToShow, setNumModulesToShow] = React.useState(50);
 

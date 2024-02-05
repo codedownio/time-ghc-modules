@@ -1,0 +1,27 @@
+
+.TreeMap__breadcrumb {
+    padding-bottom: 0.5em;
+    padding-top: 0.5em;
+}
+
+.TreeMap__breadcrumb > div {
+    display: flex;
+    align-items: center;
+}
+
+.TreeMap__breadcrumbItem {
+    font-size: 1em !important;
+}
+
+/* a.TreeMap__breadcrumbItem[style*="cursor:pointer"] { */
+a.TreeMap__breadcrumbItem {
+    text-decoration: underline;
+}
+
+.AppTreeMap__node {
+    rx: 5;
+}
+
+.AppTreeMap__svg {
+    font-family: "Courier New", Courier, monospace;
+}

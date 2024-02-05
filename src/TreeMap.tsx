@@ -1,40 +1,106 @@
 
-import {useMemo} from "react";
+import { scaleSequential } from "d3-scale";
+import * as chromatic from "d3-scale-chromatic";
+import { debounce } from "lodash";
+import { CSSProperties, useEffect, useMemo, useRef, useState} from "react";
 
 import buildNestedData from "./TreeMap/BuildData";
 import {formatBytes, formatTime} from "./Util";
 
-// import D3TreeMap from "./D3TreeMap";
+// import SimpleD3TreeMap from "./D3TreeMap";
 
-import D3TreeMap from "react-d3-treemap";
+import D3TreeMap, { ColorModel, NumberOfChildrenPlacement } from "react-d3-treemap";
 import "react-d3-treemap/dist/react.d3.treemap.css";
+
+import "./TreeMap.css";
 
 interface Props {
   aggregate: Aggregate;
   data: ModuleData;
 }
 
+const wrapperStyle: CSSProperties = {
+  width: "100%",
+  height: "80vh",
+};
+
+const paddingPx = 8;
+
+const svgStyle: CSSProperties = {
+  marginLeft: "-" + paddingPx + "px",
+}
+
 export default function TreeMap({aggregate, data}: Props) {
   const modulesList = aggregate === "time" ? data.modulesByTime : data.modulesByAlloc;
-  console.log("modulesList", modulesList);
 
   const nestedData: Tree<TreeNode> = useMemo(() => buildNestedData(aggregate, modulesList), [aggregate, modulesList]);
+
+  const ref = useRef(null);
+  const [dimensions, setDimensions] = useState<{ height: number, width: number } | null>(() => {
+    console.log("ref.current", ref.current);
+    return null;
+  });
+  const elementObserver = useMemo(() => {
+    return new ResizeObserver(() => {
+      debounce(() => {
+        if (!ref.current) return;
+        setDimensions({
+          height: ref.current.clientHeight,
+          width: ref.current.clientWidth
+        });
+      }, 10)();
+    });
+  }, [ref.current]);
+  useEffect(() => {
+    if (!ref) return;
+    const element = ref.current;
+
+    elementObserver.observe(element);
+    return () => {
+      elementObserver.unobserve(element);
+    };
+  }, [ref.current, elementObserver]);
 
   // Modes: squarify, resquarify, slice, dice, slicedice, binary, circlePack, partition, partition-pivot
 
   return (
-    <D3TreeMap<Tree<TreeNode>>
-      id="myTreeMap"
-      width={500}
-      height={400}
-      data={nestedData}
-      valueUnit={aggregate === "time" ? "us" : "B"}
-      levelsToDisplay={2}
-      />
+    <div ref={ref}
+         style={wrapperStyle}>
+
+      {dimensions &&
+       <D3TreeMap<Tree<TreeNode>>
+         id="myTreeMap"
+         width={dimensions.width + paddingPx}
+         svgStyle={svgStyle}
+         height={dimensions.height}
+         data={nestedData}
+         valueUnit=""
+         levelsToDisplay={2}
+         paddingInner={paddingPx}
+         nodeClassName="AppTreeMap__node"
+         nodeStyle={{
+           fontSize: 12,
+           paddingTop: 2,
+           paddingLeft: 5,
+           paddingRight: 5,
+         }}
+         numberOfChildrenPlacement={NumberOfChildrenPlacement.TopRight}
+         customD3ColorScale={scaleSequential(
+           chromatic.interpolateSpectral
+         )}
+         colorModel={ColorModel.OneEachChildren}
+         darkNodeBorderColor="silver"
+         darkNodeTextColor="white"
+         lightNodeBorderColor="brown"
+         lightNodeTextColor="brown"
+         valueFn={aggregate === "time" ? formatTime : formatBytes}
+         />
+      }
+    </div>
   );
 
   // return (
-  //   <D3TreeMap
+  //   <SimpleD3TreeMap
   //     width={500}
   //     height={500}
   //     data={nestedData}
