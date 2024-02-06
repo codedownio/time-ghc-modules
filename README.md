@@ -58,7 +58,7 @@ stack build --ghc-options "-ddump-to-file -ddump-timings"
 
 # Tips
 
-The script will output its log messages to `stderr` and print the final report path to `stdout` (assuming it didn't exit with a failure). This makes it easy to use the output in scripts. For example:
+* The script will output its log messages to `stderr` and print the final report path to `stdout` (assuming it didn't exit with a failure). This makes it easy to use the output in scripts. For example:
 
 ``` shell
 # Build the report and open it in your browser
@@ -68,6 +68,18 @@ The script will output its log messages to `stderr` and print the final report p
 ``` shell
 # Build the report in CI and stash it somewhere
 > cp $(/path/to/time-ghc-modules/time-ghc-modules) $MY_CI_ARTIFACTS_DIR/
+```
+
+* You can also look at the timing of individual components, but doing e.g. `stack build some-component:lib`. But, make sure to clean up any old `.dump-timings` files from previous runs:
+
+``` shell
+find . -name "*.dump-timings" | xargs rm
+```
+
+* GHC's `-dumpdir` option can be used to consolidate the `.dump-timings` files, so they aren't left all over your source tree. For example:
+
+``` shell
+stack build --ghc-options "-ddump-to-file -ddump-timings -dumpdir .ghcdump"
 ```
 
 # Compatibility
