@@ -5,8 +5,6 @@ import Select from "@material-ui/core/Select";
 import {reduce} from "lodash";
 import * as React from "react";
 
-import "tachyons";
-
 import Bars from "./Bars";
 import TreeMap from "./TreeMap";
 import {formatBytes, formatTime} from "./Util";
@@ -16,7 +14,7 @@ import {formatBytes, formatTime} from "./Util";
 const data: ModuleData = window.module_data;
 
 export default function App() {
-  const [visualization, setVisualization] = React.useState<Visualization>("treemap");
+  const [visualization, setVisualization] = React.useState<Visualization>("bars");
   const [aggregate, setAggregate] = React.useState<Aggregate>("time");
   const [numModulesToShow, setNumModulesToShow] = React.useState(50);
 

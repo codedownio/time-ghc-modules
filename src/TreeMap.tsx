@@ -10,9 +10,7 @@ import {formatBytes, formatTime} from "./Util";
 // import SimpleD3TreeMap from "./D3TreeMap";
 
 import D3TreeMap, { ColorModel, NumberOfChildrenPlacement } from "react-d3-treemap";
-import "react-d3-treemap/dist/react.d3.treemap.css";
 
-import "./TreeMap.css";
 
 interface Props {
   aggregate: Aggregate;
