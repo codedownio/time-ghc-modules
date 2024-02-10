@@ -22,7 +22,7 @@ const wrapperStyle: CSSProperties = {
   height: "80vh",
 };
 
-const paddingPx = 8;
+const paddingPx = 0;
 
 const svgStyle: CSSProperties = {
   marginLeft: "-" + paddingPx + "px",
@@ -74,14 +74,17 @@ export default function TreeMap({aggregate, data}: Props) {
          valueUnit=""
          levelsToDisplay={2}
          paddingInner={paddingPx}
+         paddingOuter={constZero}
+         paddingTop={constZero}
          nodeClassName="AppTreeMap__node"
          nodeStyle={{
            fontSize: 12,
            paddingTop: 2,
            paddingLeft: 5,
            paddingRight: 5,
+           fontFamily: "Roboto, Helvetica, Arial, sans-serif",
          }}
-         numberOfChildrenPlacement={NumberOfChildrenPlacement.TopRight}
+         hideNumberOfChildren={true}
          customD3ColorScale={scaleSequential(
            chromatic.interpolateSpectral
          )}
@@ -91,19 +94,11 @@ export default function TreeMap({aggregate, data}: Props) {
          lightNodeBorderColor="brown"
          lightNodeTextColor="brown"
          valueFn={aggregate === "time" ? formatTime : formatBytes}
+         breadCrumbClassName="ba b--silver pa1 mv1"
          />
       }
     </div>
   );
-
-  // return (
-  //   <SimpleD3TreeMap
-  //     width={500}
-  //     height={500}
-  //     data={nestedData}
-  //     labelFn={(x) => x.name}
-  //     subLabelFn={(x) => aggregate === "time" ? formatTime(x.value) : formatBytes(x.value)}
-  //     valueFn={(x) => x.value}
-  //   />
-  // );
 }
+
+const constZero = () => 0;

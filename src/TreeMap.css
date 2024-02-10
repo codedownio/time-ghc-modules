@@ -14,12 +14,12 @@
 }
 
 /* a.TreeMap__breadcrumbItem[style*="cursor:pointer"] { */
-a.TreeMap__breadcrumbItem {
-    text-decoration: underline;
+.TreeMap__breadcrumb div:not(:last-child) a.TreeMap__breadcrumbItem {
+    font-weight: bold;
 }
 
 .AppTreeMap__node {
-    rx: 5;
+    rx: 0;
 }
 
 .AppTreeMap__svg {
