@@ -9,7 +9,7 @@ import {formatBytes, formatTime} from "./Util";
 
 // import SimpleD3TreeMap from "./D3TreeMap";
 
-import D3TreeMap, { ColorModel, NumberOfChildrenPlacement } from "react-d3-treemap";
+import D3TreeMap, { ColorModel, NumberOfChildrenPlacement } from "@codedown/react-d3-treemap";
 
 
 interface Props {
