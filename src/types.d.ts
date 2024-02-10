@@ -17,3 +17,15 @@ interface ModuleData {
   modules: Array<{module: string;}>;
   data: Array<Event>;
 }
+
+type Tree<D> = D & {
+  children?: Tree<D>[];
+  id?: string;
+}
+
+interface TreeNode {
+  name: string;
+  part: string;
+  color?: string;
+  value: number;
+}

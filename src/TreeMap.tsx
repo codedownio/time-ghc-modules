@@ -1,10 +1,15 @@
 
-import {size} from "lodash";
-import {Treemap as RVTreeMap} from "react-vis";
+import { scaleSequential } from "d3-scale";
+import * as chromatic from "d3-scale-chromatic";
+import { debounce } from "lodash";
+import { CSSProperties, useEffect, useMemo, useRef, useState} from "react";
 
-import "react-vis/dist/style.css";
+import buildNestedData, {removeEmptyNodes} from "./TreeMap/BuildData";
+import {formatBytes, formatTime} from "./Util";
 
-// import {formatBytes, formatTime} from "./Util";
+// import SimpleD3TreeMap from "./D3TreeMap";
+
+import D3TreeMap, { ColorModel, NumberOfChildrenPlacement } from "@codedown/react-d3-treemap";
 
 
 interface Props {
@@ -12,53 +17,88 @@ interface Props {
   data: ModuleData;
 }
 
+const wrapperStyle: CSSProperties = {
+  width: "100%",
+  height: "80vh",
+};
+
+const paddingPx = 0;
+
+const svgStyle: CSSProperties = {
+  marginLeft: "-" + paddingPx + "px",
+}
+
 export default function TreeMap({aggregate, data}: Props) {
   const modulesList = aggregate === "time" ? data.modulesByTime : data.modulesByAlloc;
-  const numModules = size(modulesList);
 
-  console.log("modulesList", modulesList);
+  const nestedData: Tree<TreeNode> = useMemo(() => {
+    const tree = buildNestedData(aggregate, modulesList);
+    return removeEmptyNodes(tree);
+  }, [aggregate, modulesList]);
 
-  const myData = {
-    "title": "analytics",
-    "color": "#12939A",
-    "children": [
-      {
-        "title": "cluster",
-        "children": [
-          {"title": "AgglomerativeCluster", "color": "#12939A", "size": 3938},
-          {"title": "CommunityStructure", "color": "#12939A", "size": 3812},
-          {"title": "HierarchicalCluster", "color": "#12939A", "size": 6714},
-          {"title": "MergeEdge", "color": "#12939A", "size": 743}
-        ]
-      },
-      {
-        "title": "graph",
-        "children": [
-          {"title": "BetweennessCentrality", "color": "#12939A", "size": 3534},
-          {"title": "LinkDistance", "color": "#12939A", "size": 5731},
-          {"title": "MaxFlowMinCut", "color": "#12939A", "size": 7840},
-          {"title": "ShortestPaths", "color": "#12939A", "size": 5914},
-          {"title": "SpanningTree", "color": "#12939A", "size": 3416}
-        ]
-      },
-      {
-        "title": "optimization",
-        "children": [
-          {"title": "AspectRatioBanker", "color": "#12939A", "size": 7074}
-        ]
-      }
-    ]
-  }
+  const ref = useRef(null);
+  const [dimensions, setDimensions] = useState<{ height: number, width: number } | null>(null);
+  const elementObserver = useMemo(() => {
+    return new ResizeObserver(() => {
+      debounce(() => {
+        if (!ref.current) return;
+        setDimensions({
+          height: ref.current.clientHeight,
+          width: ref.current.clientWidth
+        });
+      }, 10)();
+    });
+  }, [ref.current]);
+  useEffect(() => {
+    if (!ref) return;
+    const element = ref.current;
 
-  // Modes: squarify, resquarify, slice, dice, slicedice, binary, circlePack, partition, partition-pivot
+    elementObserver.observe(element);
+    return () => {
+      elementObserver.unobserve(element);
+    };
+  }, [ref.current, elementObserver]);
 
   return (
-    <RVTreeMap
-      title={'My New Treemap'}
-      width={300}
-      height={300}
-      data={myData}
-      mode="binary"
-    />
+    <div ref={ref}
+         style={wrapperStyle}>
+
+      {dimensions &&
+       <D3TreeMap<Tree<TreeNode>>
+         key={aggregate}
+         id="myTreeMap"
+         width={dimensions.width + paddingPx}
+         svgStyle={svgStyle}
+         height={dimensions.height}
+         data={nestedData}
+         valueUnit=""
+         levelsToDisplay={2}
+         paddingInner={paddingPx}
+         paddingOuter={constZero}
+         paddingTop={constZero}
+         nodeClassName="AppTreeMap__node"
+         nodeStyle={{
+           fontSize: 12,
+           paddingTop: 2,
+           paddingLeft: 5,
+           paddingRight: 5,
+           fontFamily: "Roboto, Helvetica, Arial, sans-serif",
+         }}
+         hideNumberOfChildren={true}
+         customD3ColorScale={scaleSequential(
+           chromatic.interpolateSpectral
+         )}
+         colorModel={ColorModel.OneEachChildren}
+         darkNodeBorderColor="silver"
+         darkNodeTextColor="white"
+         lightNodeBorderColor="brown"
+         lightNodeTextColor="brown"
+         valueFn={aggregate === "time" ? formatTime : formatBytes}
+         breadCrumbClassName="ba b--silver pa1 mv1"
+         />
+      }
+    </div>
   );
 }
+
+const constZero = () => 0;
