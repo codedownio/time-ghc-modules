@@ -12,3 +12,4 @@ yarn-error.log*
 .npm
 .eslintcache
 .parcel-cache
+dist/index_dev.html
