@@ -59,19 +59,12 @@ export default function CleanTreeMap<D>({data, width, height, labelFn, subLabelF
   const requestSetData = useCallback((d: HierarchyRectangularNode<D>) => {
     setSelectedData(d.data);
 
-    const parents: HierarchyRectangularNode<D>[] = [];
-    while (d) {
-      parents.unshift(d);
-      d = d.parent;
-    }
-
-    console.log("Got parents", parents);
+    const parents = d.ancestors().reverse();
 
     const bcs: IBreadcrumb[] = [];
     for (let i = 0; i < parents.length; i += 1) {
       let dprime = parents[i];
       let bcsSoFar = [...bcs];
-      console.log("dprime", dprime);
       const newBc = {
         name: labelFn(dprime.data),
         activate: () => {
@@ -81,7 +74,6 @@ export default function CleanTreeMap<D>({data, width, height, labelFn, subLabelF
       };
       bcs.push(newBc);
     }
-    console.log("bcs", bcs);
     setBreadcrumbs(bcs);
   }, [setSelectedData])
 
