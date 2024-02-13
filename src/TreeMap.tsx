@@ -4,12 +4,14 @@ import * as chromatic from "d3-scale-chromatic";
 import { debounce } from "lodash";
 import { CSSProperties, useEffect, useMemo, useRef, useState} from "react";
 
+import CleanTreeMap from "./CleanTreeMap";
+
 import buildNestedData, {removeEmptyNodes} from "./TreeMap/BuildData";
 import {formatBytes, formatTime} from "./Util";
 
 // import SimpleD3TreeMap from "./D3TreeMap";
 
-import D3TreeMap, { ColorModel, NumberOfChildrenPlacement } from "@codedown/react-d3-treemap";
+// import D3TreeMap, { ColorModel, NumberOfChildrenPlacement } from "react-d3-treemap";
 
 
 interface Props {
@@ -62,41 +64,17 @@ export default function TreeMap({aggregate, data}: Props) {
   return (
     <div ref={ref}
          style={wrapperStyle}>
-
-      {dimensions &&
-       <D3TreeMap<Tree<TreeNode>>
-         key={aggregate}
-         id="myTreeMap"
-         width={dimensions.width + paddingPx}
-         svgStyle={svgStyle}
-         height={dimensions.height}
-         data={nestedData}
-         valueUnit=""
-         levelsToDisplay={2}
-         paddingInner={paddingPx}
-         paddingOuter={constZero}
-         paddingTop={constZero}
-         nodeClassName="AppTreeMap__node"
-         nodeStyle={{
-           fontSize: 12,
-           paddingTop: 2,
-           paddingLeft: 5,
-           paddingRight: 5,
-           fontFamily: "Roboto, Helvetica, Arial, sans-serif",
-         }}
-         hideNumberOfChildren={true}
-         customD3ColorScale={scaleSequential(
-           chromatic.interpolateSpectral
-         )}
-         colorModel={ColorModel.OneEachChildren}
-         darkNodeBorderColor="silver"
-         darkNodeTextColor="white"
-         lightNodeBorderColor="brown"
-         lightNodeTextColor="brown"
-         valueFn={aggregate === "time" ? formatTime : formatBytes}
-         breadCrumbClassName="ba b--silver pa1 mv1"
+        {dimensions &&
+         <CleanTreeMap
+           width={dimensions.width}
+           height={dimensions.height}
+           data={nestedData}
+           labelFn={(x) => x.name}
+           subLabelFn={(d, value) => aggregate === "time" ? formatTime(value) : formatBytes(value)}
+           valueFn={(x) => x.value}
+           childrenFn={(x) => x.children}
          />
-      }
+        }
     </div>
   );
 }
