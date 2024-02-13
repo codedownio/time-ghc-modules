@@ -53,15 +53,18 @@ function makeBreadcrumb<D>(data: D, labelFn: (x: D) => string, setSelectedData: 
 }
 
 export default function CleanTreeMap<D>({data, width, height, labelFn, subLabelFn, valueFn}: Props<D>) {
+  const svgRef = useRef(null);
   const [selectedData, setSelectedData] = useState(data);
   const [breadcrumbs, setBreadcrumbs] = useState<IBreadcrumb[]>([makeBreadcrumb(data, labelFn, setSelectedData)]);
+  const breadcrumbsRef = useRef(breadcrumbs);
+  breadcrumbsRef.current = breadcrumbs;
 
   const requestSetData = useCallback((d: HierarchyRectangularNode<D>) => {
     setSelectedData(d.data);
 
     const parents = d.ancestors().reverse();
 
-    const bcs: IBreadcrumb[] = [];
+    const bcs: IBreadcrumb[] = [...breadcrumbsRef.current.slice(0, breadcrumbsRef.current.length - 1)];
     for (let i = 0; i < parents.length; i += 1) {
       let dprime = parents[i];
       let bcsSoFar = [...bcs];
@@ -81,7 +84,7 @@ export default function CleanTreeMap<D>({data, width, height, labelFn, subLabelF
     const root = treemap<D>()
       .size([width, height])
       .paddingOuter(3)
-      .paddingInner(1)
+      .paddingInner(3)
       .paddingTop(19)
       .round(true)
     (hierarchy(selectedData)
@@ -93,15 +96,12 @@ export default function CleanTreeMap<D>({data, width, height, labelFn, subLabelF
     return [root, color]
   }, [width, height, selectedData, valueFn]);
 
-  const svgRef = useRef(null);
-
   useLayoutEffect(() => {
-    console.log("Running SVG effect");
     if (!svgRef.current) return;
 
     const svg = select(svgRef.current);
 
-    console.log("Working on svg", svg);
+    console.log("Rendering svg", svg);
 
     const shadow = uid("shadow");
 
@@ -112,44 +112,49 @@ export default function CleanTreeMap<D>({data, width, height, labelFn, subLabelF
        .attr("dx", 0)
        .attr("stdDeviation", 3);
 
-    const node = svg
-      .selectAll("g")
-      .data(group(root, (d) => d.height))
-      .join("g")
-      .attr("filter", shadow)
-      .selectAll("g")
-      .data((d) => d[1])
-      .join("g")
-      .attr("transform", (d) => `translate(${d.x0},${d.y0})`)
-      .style("cursor", (d) => d.children ? "pointer" : "default")
-      .style("font-weight", (d) => d.children ? "bold" : "auto")
-      .on("click", (event, d) => d.children ? requestSetData(d) : null);
-    ;
+    const node = svg.selectAll("g")
+                    .data(group(root, (d) => d.height))
+                    .join("g")
+                    .attr("filter", shadow)
+                    .selectAll("g")
+                    .data((d) => d[1])
+                    .join("g")
+                    .attr("transform", (d) => `translate(${d.x0},${d.y0})`)
+                    .style("cursor", (d) => d.children ? "pointer" : "default")
+                    .style("font-weight", (d) => d.children ? "bold" : "auto")
+                    .on("click", (_event, d) => d.children ? requestSetData(d) : null);
 
     node.append("title")
         .text(d => labelFn(d.data) + " / " + subLabelFn(d.data, d.value));
 
     node.append("rect")
-    // @ts-ignore
-        .attr("id", d => (d.nodeUid = d.nodeUid || uid("node")).id)
+        .attr("id", d => (d["nodeUid"] = d["nodeUid"] || uid("node")).id)
         .attr("fill", d => color(d.height))
         .attr("width", d => d.x1 - d.x0)
         .attr("height", d => d.y1 - d.y0);
 
     node.append("clipPath")
-    // @ts-ignore
-        .attr("id", d => (d.clipUid = d.clipUid || uid("clip")).id)
+        .attr("id", d => (d["clipUid"] = d["clipUid"] || uid("clip")).id)
         .append("use")
-    // @ts-ignore
-        .attr("xlink:href", d => d.nodeUid.href);
+        .attr("xlink:href", d => d["nodeUid"].href);
 
     node.append("text")
-    // @ts-ignore
-        .attr("clip-path", d => d.clipUid)
+        .attr("clip-path", d => d["clipUid"])
         .selectAll("tspan")
         .data(d => [labelFn(d.data), subLabelFn(d.data, d.value)])
         .join("tspan")
         .attr("fill-opacity", (d, i, nodes) => i === nodes.length - 1 ? 0.7 : null)
+        .text(d => d);
+
+    node.filter(d => d.children && d.children.length > 0)
+        .append("text")
+        .attr("x", (d) => d.x1 - d.x0 - 6)
+        .attr("dy", -1)
+        .attr("fill-opacity", 0.7)
+        .attr("text-anchor", "end")
+        .selectAll("tspan")
+        .data(d => ["(" + (d.descendants().length - 1) + ")"])
+        .join("tspan")
         .text(d => d);
 
     node.filter(d => d.children && d.children.length > 0).selectAll("tspan")
@@ -163,7 +168,7 @@ export default function CleanTreeMap<D>({data, width, height, labelFn, subLabelF
     return () => {
       svg.selectAll("*").remove();
     };
-  }, [width, height, svgRef, root]);
+  }, [width, height, root]);
 
   return (
     <div>
@@ -171,10 +176,12 @@ export default function CleanTreeMap<D>({data, width, height, labelFn, subLabelF
             {breadcrumbs.map((bc, i) =>
               <>
                   <span className="b pointer"
+                        key={bc.name}
                         onClick={bc.activate}>{bc.name}</span>
 
                   {(i < breadcrumbs.length - 1) &&
-                   <span className="mh2">/</span>
+                   <span className="mh2"
+                         key="slash">/</span>
                   }
               </>
             )}
