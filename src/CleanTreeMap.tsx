@@ -17,7 +17,7 @@ interface Props<D> {
   valueFn: (d: D) => number;
 }
 
-var count = 0;
+var count = 1;
 
 export function uid(name) {
   return new Id("O-" + (name == null ? "" : name + "-") + ++count);
@@ -131,14 +131,14 @@ export default function CleanTreeMap<D>({data, width, height, labelFn, subLabelF
 
     node.append("rect")
     // @ts-ignore
-        .attr("id", d => (d.nodeUid = uid("node")).id)
+        .attr("id", d => (d.nodeUid = d.nodeUid || uid("node")).id)
         .attr("fill", d => color(d.height))
         .attr("width", d => d.x1 - d.x0)
         .attr("height", d => d.y1 - d.y0);
 
     node.append("clipPath")
     // @ts-ignore
-        .attr("id", d => (d.clipUid = uid("clip")).id)
+        .attr("id", d => (d.clipUid = d.clipUid || uid("clip")).id)
         .append("use")
     // @ts-ignore
         .attr("xlink:href", d => d.nodeUid.href);
