@@ -1,6 +1,4 @@
 
-import { scaleSequential } from "d3-scale";
-import * as chromatic from "d3-scale-chromatic";
 import { debounce } from "lodash";
 import { CSSProperties, useEffect, useMemo, useRef, useState} from "react";
 
@@ -8,10 +6,6 @@ import CleanTreeMap from "./CleanTreeMap";
 
 import buildNestedData, {removeEmptyNodes} from "./TreeMap/BuildData";
 import {formatBytes, formatTime} from "./Util";
-
-// import SimpleD3TreeMap from "./D3TreeMap";
-
-// import D3TreeMap, { ColorModel, NumberOfChildrenPlacement } from "react-d3-treemap";
 
 
 interface Props {
@@ -23,12 +17,6 @@ const wrapperStyle: CSSProperties = {
   width: "100%",
   height: "80vh",
 };
-
-const paddingPx = 0;
-
-const svgStyle: CSSProperties = {
-  marginLeft: "-" + paddingPx + "px",
-}
 
 export default function TreeMap({aggregate, data}: Props) {
   const modulesList = aggregate === "time" ? data.modulesByTime : data.modulesByAlloc;
@@ -72,11 +60,8 @@ export default function TreeMap({aggregate, data}: Props) {
            labelFn={(x) => x.name}
            subLabelFn={(d, value) => aggregate === "time" ? formatTime(value) : formatBytes(value)}
            valueFn={(x) => x.value}
-           childrenFn={(x) => x.children}
          />
         }
     </div>
   );
 }
-
-const constZero = () => 0;

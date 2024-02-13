@@ -7,7 +7,7 @@
   },
   "scripts": {
     "build": "rimraf ./dist && parcel build ./src/index.html --public-url '/'",
-    "start": "parcel ./src/index_test.html"
+    "start": "parcel ./src/index_dev.html"
   },
   "repository": {
     "type": "git",
@@ -33,7 +33,6 @@
     "rimraf": "^3.0.2"
   },
   "dependencies": {
-    "@codedown/react-d3-treemap": "^1.0.31",
     "@material-ui/core": "^4.12.3",
     "apexcharts": "^3.27.3",
     "d3-array": "^3.2.4",

@@ -1,11 +1,9 @@
 import { group } from "d3-array";
-import { type TreemapLayout, type HierarchyRectangularNode, hierarchy, treemap, treemapBinary } from "d3-hierarchy";
-import { interpolateRgb } from "d3-interpolate";
-import { scaleOrdinal, scaleSequential } from "d3-scale";
-import { interpolateMagma, schemeCategory10 } from "d3-scale-chromatic";
-import { create, select } from "d3-selection";
-import { isEqual, keys } from "lodash";
-import { CSSProperties, PureComponent, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { type HierarchyRectangularNode, hierarchy, treemap } from "d3-hierarchy";
+import { scaleSequential } from "d3-scale";
+import { interpolateMagma,  } from "d3-scale-chromatic";
+import { select } from "d3-selection";
+import { CSSProperties, useCallback, useLayoutEffect, useMemo, useRef, useState } from "react";
 
 
 interface Props<D> {
@@ -17,7 +15,6 @@ interface Props<D> {
   labelFn: (d: D) => string;
   subLabelFn: (d: D, value: number) => string;
   valueFn: (d: D) => number;
-  childrenFn: (d: D) => D[];
 }
 
 var count = 0;
@@ -55,7 +52,7 @@ function makeBreadcrumb<D>(data: D, labelFn: (x: D) => string, setSelectedData: 
   };
 }
 
-export default function CleanTreeMap<D>({data, width, height, labelFn, subLabelFn, childrenFn, valueFn}: Props<D>) {
+export default function CleanTreeMap<D>({data, width, height, labelFn, subLabelFn, valueFn}: Props<D>) {
   const [selectedData, setSelectedData] = useState(data);
   const [breadcrumbs, setBreadcrumbs] = useState<IBreadcrumb[]>([makeBreadcrumb(data, labelFn, setSelectedData)]);
 
@@ -132,13 +129,13 @@ export default function CleanTreeMap<D>({data, width, height, labelFn, subLabelF
       .data((d) => d[1])
       .join("g")
       .attr("transform", (d) => `translate(${d.x0},${d.y0})`)
-      .style("cursor", (d) => d.children ? "pointer" : "auto")
+      .style("cursor", (d) => d.children ? "pointer" : "default")
       .style("font-weight", (d) => d.children ? "bold" : "auto")
       .on("click", (event, d) => d.children ? requestSetData(d) : null);
     ;
 
     node.append("title")
-        .text(d => `${d.ancestors().reverse().map(d => labelFn(d.data)).join("/")}`);
+        .text(d => labelFn(d.data) + " / " + subLabelFn(d.data, d.value));
 
     node.append("rect")
     // @ts-ignore
