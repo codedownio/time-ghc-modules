@@ -1,7 +1,7 @@
 
 # time-ghc-modules
 
-Figure out why your builds are slow. This tool analyzes how long it takes GHC to compile your Haskell modules, broken down by phase.
+Figure out why your builds are slow. This tool analyzes how long it takes GHC to compile your Haskell modules, broken down by phase. It can draw both bar charts and treemaps, of time or space usage.
 
 # Quick start
 
