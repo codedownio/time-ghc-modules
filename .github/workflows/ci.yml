@@ -44,7 +44,7 @@ jobs:
       run: |
         cd hledger
         cabal clean
-        cabal build all --ghc-options "-ddump-to-file -ddump-timings"
+        cabal build hledger --ghc-options "-ddump-to-file -ddump-timings"
 
     - name: Clean run
       run: |
