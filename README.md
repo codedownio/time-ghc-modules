@@ -12,7 +12,7 @@ stack clean
 stack build --ghc-options "-ddump-to-file -ddump-timings"
 # ----- OR -----
 cabal clean
-cabal build --ghc-options "-ddump-to-file -ddump-timings"
+cabal build all --ghc-options "-ddump-to-file -ddump-timings"
 ```
 
 If you have Nix, you can simply run `time-ghc-modules` from Nixpkgs!
