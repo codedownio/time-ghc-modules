@@ -22,7 +22,7 @@ export default function App() {
   const totalTime = React.useMemo(() => reduce(data.phasesByTime, (n, value) => n + value.time, 0), [data]);
   const totalAlloc = React.useMemo(() => reduce(data.phasesByAlloc, (n, value) => n + value.alloc, 0), [data]);
 
-  console.log("Got data", data);
+  console.log("App got data", data);
 
   const handleSetVisualization = React.useCallback((event) => setVisualization(event.target.value), [setVisualization]);
   const handleSetAggregate = React.useCallback((event) => setAggregate(event.target.value), [setAggregate]);
