@@ -3,7 +3,9 @@ import { type HierarchyRectangularNode, hierarchy, treemap } from "d3-hierarchy"
 import { scaleSequential } from "d3-scale";
 import { interpolateMagma,  } from "d3-scale-chromatic";
 import { select } from "d3-selection";
-import { CSSProperties, useCallback, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { CSSProperties, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+
+import {uid} from "./Uid";
 
 
 interface Props<D> {
@@ -16,22 +18,6 @@ interface Props<D> {
   subLabelFn: (d: D, value: number) => string;
   valueFn: (d: D) => number;
 }
-
-var count = 1;
-
-export function uid(name) {
-  return new Id("O-" + (name == null ? "" : name + "-") + ++count);
-}
-
-function Id(id) {
-  this.id = id;
-  this.href = new URL(`#${id}`, location) + "";
-}
-
-Id.prototype.toString = function() {
-  return "url(" + this.href + ")";
-};
-
 
 const baseSvgStyle: CSSProperties = {
   maxWidth: "100%",
@@ -56,6 +42,12 @@ export default function CleanTreeMap<D>({data, width, height, labelFn, subLabelF
   const svgRef = useRef(null);
   const [selectedData, setSelectedData] = useState(data);
   const [breadcrumbs, setBreadcrumbs] = useState<IBreadcrumb[]>([makeBreadcrumb(data, labelFn, setSelectedData)]);
+
+  useEffect(() => {
+    setSelectedData(data);
+    setBreadcrumbs([makeBreadcrumb(data, labelFn, setSelectedData)]);
+  }, [data, labelFn, setSelectedData]);
+
   const breadcrumbsRef = useRef(breadcrumbs);
   breadcrumbsRef.current = breadcrumbs;
 
@@ -113,11 +105,8 @@ export default function CleanTreeMap<D>({data, width, height, labelFn, subLabelF
        .attr("stdDeviation", 3);
 
     const node = svg.selectAll("g")
-                    .data(group(root, (d) => d.height))
-                    .join("g")
+                    .data(root)
                     .attr("filter", shadow)
-                    .selectAll("g")
-                    .data((d) => d[1])
                     .join("g")
                     .attr("transform", (d) => `translate(${d.x0},${d.y0})`)
                     .style("cursor", (d) => d.children ? "pointer" : "default")
@@ -141,20 +130,12 @@ export default function CleanTreeMap<D>({data, width, height, labelFn, subLabelF
     node.append("text")
         .attr("clip-path", d => d["clipUid"])
         .selectAll("tspan")
-        .data(d => [labelFn(d.data), subLabelFn(d.data, d.value)])
+        .data(d => [
+          labelFn(d.data) + (d.children ? (" (+" + (d.descendants().length - 1) + ")") : ""),
+          subLabelFn(d.data, d.value)
+        ])
         .join("tspan")
         .attr("fill-opacity", (d, i, nodes) => i === nodes.length - 1 ? 0.7 : null)
-        .text(d => d);
-
-    node.filter(d => d.children && d.children.length > 0)
-        .append("text")
-        .attr("x", (d) => d.x1 - d.x0 - 6)
-        .attr("dy", -1)
-        .attr("fill-opacity", 0.7)
-        .attr("text-anchor", "end")
-        .selectAll("tspan")
-        .data(d => ["(" + (d.descendants().length - 1) + ")"])
-        .join("tspan")
         .text(d => d);
 
     node.filter(d => d.children && d.children.length > 0).selectAll("tspan")
