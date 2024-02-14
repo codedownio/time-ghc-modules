@@ -54,7 +54,7 @@ stack build --ghc-options "-ddump-to-file -ddump-timings"
 ../time-ghc-modules/time-ghc-modules-nix
 ```
 
-![hledger profile](./hledger.png)
+![hledger profile](./hledger.gif)
 
 # Tips
 
