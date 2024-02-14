@@ -1,10 +1,9 @@
 
 import {map, size} from "lodash";
 import {useMemo} from "react";
-import * as React from "react";
 
-import Chart from "./Chart";
-import {formatBytes, formatTime} from "./Util";
+import Chart from "./Bars/Chart";
+import {formatBytes, formatTime} from "./Formatting";
 
 
 interface Props {

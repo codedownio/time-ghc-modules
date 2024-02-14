@@ -1,7 +1,7 @@
 
-import * as React from "react";
-
+import {useMemo} from "react";
 import ReactApexCharts from "react-apexcharts";
+
 
 interface Props {
   title: string;
@@ -14,7 +14,7 @@ interface Props {
 const baseHeight = 200;
 
 export default function ApexChart({title, series, categories, xLabel, formatter}: Props) {
-  const options: ApexCharts.ApexOptions = React.useMemo(() => ({
+  const options: ApexCharts.ApexOptions = useMemo(() => ({
     chart: {
       animations: {
         enabled: false

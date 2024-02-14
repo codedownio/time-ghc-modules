@@ -5,9 +5,10 @@ import Select from "@material-ui/core/Select";
 import {reduce} from "lodash";
 import * as React from "react";
 
+import {formatBytes, formatTime} from "./Formatting";
+
 import Bars from "./Bars";
 import TreeMap from "./TreeMap";
-import {formatBytes, formatTime} from "./Util";
 
 
 // @ts-ignore, inserted into the HTML

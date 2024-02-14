@@ -2,10 +2,9 @@
 import { debounce } from "lodash";
 import { CSSProperties, useEffect, useMemo, useRef, useState} from "react";
 
-import CleanTreeMap from "./CleanTreeMap";
-
+import {formatBytes, formatTime} from "./Formatting";
 import buildNestedData, {removeEmptyNodes} from "./TreeMap/BuildData";
-import {formatBytes, formatTime} from "./Util";
+import CleanTreeMap from "./TreeMap/CleanTreeMap";
 
 
 interface Props {
